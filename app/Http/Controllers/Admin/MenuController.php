@@ -3,15 +3,15 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use App\Models\Menu;
-use Validator;
 use Cache;
-use Auth;
+use Illuminate\Http\Request;
+
 class MenuController extends Controller
 {
-    public function __construct(){
-      $this->middleware('permission:menu'); 
+    public function __construct()
+    {
+        $this->middleware('permission:menu');
     }
 
     /**
@@ -22,62 +22,60 @@ class MenuController extends Controller
     public function index()
     {
         $menus = Menu::latest()->get();
-        $languages = get_option('languages',true);
+        $languages = get_option('languages', true);
 
-        $totalMenus =  Menu::count();
-        $totalActiveMenus =  Menu::where('status',1)->count();
-        $totalDraftMenus =  Menu::where('status',0)->count();
-        return view('admin.menu.index', compact('menus', 'languages','totalMenus','totalActiveMenus','totalDraftMenus'));
+        $totalMenus = Menu::count();
+        $totalActiveMenus = Menu::where('status', 1)->count();
+        $totalDraftMenus = Menu::where('status', 0)->count();
+
+        return view('admin.menu.index', compact('menus', 'languages', 'totalMenus', 'totalActiveMenus', 'totalDraftMenus'));
     }
-
-    
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
     {
         $data = $request->validate([
-            'name'  => ['required'],
-            'position'=> ['required'],
-            'status'=> ['required'],
-            'status'=> ['required'],
-            'language'=> ['required'],
+            'name' => ['required'],
+            'position' => ['required'],
+            'status' => ['required'],
+            'status' => ['required'],
+            'language' => ['required'],
         ]);
 
         if ($request->status == 1) {
-             Menu::where('position',$request->position)
-             ->where('lang', $request->lang)
-             ->update(['status' => 0]);
-        }  
+            Menu::where('position', $request->position)
+            ->where('lang', $request->lang)
+            ->update(['status' => 0]);
+        }
 
         $men = new Menu;
         $men->name = $request->name;
         $men->position = $request->position;
         $men->status = $request->status;
         $men->lang = $request->language;
-        $men->data = "[]";
+        $men->data = '[]';
         $men->save();
 
         return response()->json([
             'redirect' => route('admin.menu.index'),
-            'message'  => __('Menu Created Successfully.')
+            'message' => __('Menu Created Successfully.'),
         ]);
     }
 
-    public function storeDate(Request $request,$id)
+    public function storeDate(Request $request, $id)
     {
-      
         $info = Menu::findOrFail($id);
-        $info->data = str_replace('<script>','',$request->data);
+        $info->data = str_replace('<script>', '', $request->data);
         $info->save();
 
-        Cache::forget($info->position . $info->lang);
+        Cache::forget($info->position.$info->lang);
+
         return response()->json([
-            'message'  => __('Menu Updated Successfully.')
+            'message' => __('Menu Updated Successfully.'),
         ]);
     }
 
@@ -92,33 +90,30 @@ class MenuController extends Controller
         $info = Menu::findOrFail($id);
         $contents = $info->data ?? '';
 
-        return view('admin.menu.show', compact('info','contents'));
+        return view('admin.menu.show', compact('info', 'contents'));
     }
-
-    
 
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id)
     {
         $request->validate([
-            'name'  => 'required',
-            'position'=> 'required',
-            'status'=> 'required',
-            'status'=> 'required',
-            'language'=> 'required',
+            'name' => 'required',
+            'position' => 'required',
+            'status' => 'required',
+            'status' => 'required',
+            'language' => 'required',
         ]);
 
         if ($request->status == 1) {
-             Menu::where('position',$request->position)
-             ->where('lang', $request->lang)
-             ->update(['status' => 0]);
-        }  
+            Menu::where('position', $request->position)
+            ->where('lang', $request->lang)
+            ->update(['status' => 0]);
+        }
 
         $menu = Menu::find($id);
         $menu->name = $request->name;
@@ -127,11 +122,11 @@ class MenuController extends Controller
         $menu->lang = $request->language;
         $menu->save();
 
-        Cache::forget($request->position . $request->language);
+        Cache::forget($request->position.$request->language);
 
         return response()->json([
             'redirect' => route('admin.menu.index'),
-            'message'  => __('Menu Updated Successfully.')
+            'message' => __('Menu Updated Successfully.'),
         ]);
     }
 
@@ -148,7 +143,7 @@ class MenuController extends Controller
 
         return response()->json([
             'redirect' => route('admin.menu.index'),
-            'message'  => __('Menu Removed Successfully.')
+            'message' => __('Menu Removed Successfully.'),
         ]);
     }
 }

@@ -19,7 +19,7 @@ class Order extends Model
     ];
 
     protected $casts = [
-        'meta' => 'json'
+        'meta' => 'json',
     ];
 
     protected static function boot()
@@ -43,8 +43,6 @@ class Order extends Model
 
     public function gateway()
     {
-       return $this->belongsTo('App\Models\Gateway');
+        return $this->belongsTo('App\Models\Gateway');
     }
-
-  
 }

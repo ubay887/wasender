@@ -3,28 +3,18 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use App\Models\Smstransaction;
-use App\Models\Smstesttransactions;
 use App\Http\Requests\Bulkrequest;
-use App\Models\User;
 use App\Models\App;
 use App\Models\Device;
-use App\Models\Contact;
-use App\Models\Template;
 use App\Models\Reply;
-use Carbon\Carbon;
+use App\Models\Template;
+use App\Models\User;
 use App\Traits\Whatsapp;
-use Http;
-use Auth;
-use Str;
-use DB;
-use Session;
+use Illuminate\Http\Request;
 
 class BulkController extends Controller
 {
     use Whatsapp;
-
 
     /**
      * sent message
@@ -34,7 +24,6 @@ class BulkController extends Controller
      */
     public function submitRequest(Bulkrequest $request)
     {
-
         // dd($request->all());
         $user = User::where('status', 1)->where('will_expire', '>', now())->where('authkey', $request->authkey)->first();
         $app = App::where('key', $request->appkey)->whereHas('device')->with('device')->where('status', 1)->first();
@@ -45,12 +34,11 @@ class BulkController extends Controller
 
         if (getUserPlanData('messages_limit', $user->id) == false) {
             return response()->json([
-                'message' => __('Maximum Monthly Messages Limit Exceeded')
+                'message' => __('Maximum Monthly Messages Limit Exceeded'),
             ], 401);
         }
 
-        if (!empty($request->template_id)) {
-
+        if (! empty($request->template_id)) {
             $template = Template::where('user_id', $user->id)->where('uuid', $request->template_id)->where('status', 1)->first();
             if (empty($template)) {
                 return response()->json(['error' => 'Template Not Found'], 401);
@@ -66,11 +54,8 @@ class BulkController extends Controller
             }
             $type = $template->type;
         } else {
-
             $text = $this->formatText($request->message);
-            if (!empty($request->file)) {
-
-
+            if (! empty($request->file)) {
                 $explode = explode('.', $request->file);
                 $file_type = strtolower(end($explode));
                 $extentions = [
@@ -82,14 +67,14 @@ class BulkController extends Controller
                     'docx' => 'document',
                     'xlsx' => 'document',
                     'csv' => 'document',
-                    'txt' => 'document'
+                    'txt' => 'document',
                 ];
 
-                if (!isset($extentions[$file_type])) {
+                if (! isset($extentions[$file_type])) {
                     $validators['error'] = 'file type should be jpg,jpeg,png,webp,pdf,docx,xlsx,csv,txt';
+
                     return response()->json($validators, 403);
                 }
-
 
                 $body[$extentions[$file_type]] = ['url' => $request->file];
                 $body['caption'] = $text;
@@ -100,16 +85,14 @@ class BulkController extends Controller
             }
         }
 
-        if (!isset($body)) {
+        if (! isset($body)) {
             return response()->json(['error' => 'Request Failed'], 401);
         }
 
         try {
-
             $response = $this->messageSend($body, $app->device_id, $request->to, $type, true);
 
             if ($response['status'] == 200) {
-
                 $logs['user_id'] = $user->id;
                 $logs['device_id'] = $app->device_id;
                 $logs['app_id'] = $app->id;
@@ -129,38 +112,34 @@ class BulkController extends Controller
                 return response()->json(['error' => 'Request Failed'], 401);
             }
         } catch (Exception $e) {
-
             return response()->json(['error' => 'Request Failed'], 401);
         }
     }
 
-
     /**
      * set status device
+     *
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
     public function setStatus($device_id, $status)
     {
-
         $device_id = str_replace('device_', '', $device_id);
 
         $device = Device::where('id', $device_id)->first();
-        if (!empty($device)) {
+        if (! empty($device)) {
             $device->status = $status;
             $device->save();
         }
     }
 
-
     /**
      * receive webhook response
-     * @param  \Illuminate\Http\Request  $request
+     *
      * @return \Illuminate\Http\Response
      */
     public function webHook(Request $request, $device_id)
     {
-
         $session = $device_id;
         $device_id = str_replace('device_', '', $device_id);
 
@@ -175,15 +154,12 @@ class BulkController extends Controller
         $message = $request->message ?? null;
         $device_id = $device_id;
 
-
         if (strlen($message) < 50 && $device != null && $message != null) {
-            $replies = Reply::where('device_id', $device_id)->with('template')->where('keyword', 'LIKE', '%' . $message . '%')->latest()->get();
+            $replies = Reply::where('device_id', $device_id)->with('template')->where('keyword', 'LIKE', '%'.$message.'%')->latest()->get();
 
             foreach ($replies as $key => $reply) {
                 if ($reply->match_type == 'equal') {
-
                     if ($reply->reply_type == 'text') {
-
                         $logs['user_id'] = $device->user_id;
                         $logs['device_id'] = $device->id;
                         $logs['from'] = $device->phone ?? null;
@@ -192,12 +168,12 @@ class BulkController extends Controller
                         $this->saveLog($logs);
 
                         return response()->json([
-                            'message'  => array('text' => $reply->reply),
+                            'message' => ['text' => $reply->reply],
                             'receiver' => $request->from,
-                            'session_id' => $session
+                            'session_id' => $session,
                         ], 200);
                     } else {
-                        if (!empty($reply->template)) {
+                        if (! empty($reply->template)) {
                             $template = $reply->template;
 
                             if (isset($template->body['text'])) {
@@ -217,9 +193,9 @@ class BulkController extends Controller
                             $this->saveLog($logs);
 
                             return response()->json([
-                                'message'  => $body,
+                                'message' => $body,
                                 'receiver' => $request->from,
-                                'session_id' => $session
+                                'session_id' => $session,
                             ], 200);
                         }
                     }
@@ -229,9 +205,9 @@ class BulkController extends Controller
         }
 
         return response()->json([
-            'message'  => array('text' => null),
+            'message' => ['text' => null],
             'receiver' => $request->from,
-            'session_id' => $session
+            'session_id' => $session,
         ], 403);
     }
 }

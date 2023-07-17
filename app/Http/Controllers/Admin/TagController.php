@@ -3,9 +3,9 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
-use App\Models\Category;
 
 class TagController extends Controller
 {
@@ -13,6 +13,7 @@ class TagController extends Controller
     {
         $this->middleware('permission:blog-tags');
     }
+
     /**
      * Display a listing of the resource.
      *
@@ -22,25 +23,23 @@ class TagController extends Controller
     {
         $tags = Category::whereType('tags')->withCount('postcategories')->latest()->paginate(10);
         $totalTags = Category::whereType('tags')->count();
-        $activeTags = Category::whereType('tags')->where('status',1)->count();
-        $inActiveTags = Category::whereType('tags')->where('status',0)->count();
-        $languages = get_option('languages',true);
-        return view('admin.tag.index', compact('tags','totalTags','activeTags','inActiveTags','languages'));
-    }
+        $activeTags = Category::whereType('tags')->where('status', 1)->count();
+        $inActiveTags = Category::whereType('tags')->where('status', 0)->count();
+        $languages = get_option('languages', true);
 
-    
+        return view('admin.tag.index', compact('tags', 'totalTags', 'activeTags', 'inActiveTags', 'languages'));
+    }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
     {
-       $request->validate([
+        $request->validate([
             'title' => ['required', 'min:2', 'max:100'],
-            'language' => ['required']
+            'language' => ['required'],
         ]);
 
         Category::create([
@@ -53,16 +52,13 @@ class TagController extends Controller
 
         return response()->json([
             'message' => __('Tag created successfully.'),
-            'redirect' => route('admin.tag.index')
+            'redirect' => route('admin.tag.index'),
         ]);
     }
-
-   
 
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
@@ -70,7 +66,7 @@ class TagController extends Controller
     {
         $request->validate([
             'title' => ['required', 'min:2', 'max:100'],
-            'language' => ['required']
+            'language' => ['required'],
         ]);
 
         $tag = Category::findOrFail($id);
@@ -84,7 +80,7 @@ class TagController extends Controller
 
         return response()->json([
             'message' => __('Tag updated successfully.'),
-            'redirect' => route('admin.tag.index')
+            'redirect' => route('admin.tag.index'),
         ]);
     }
 
@@ -101,7 +97,7 @@ class TagController extends Controller
 
         return response()->json([
             'message' => __('Tag deleted successfully.'),
-            'redirect' => route('admin.tag.index')
+            'redirect' => route('admin.tag.index'),
         ]);
     }
 }

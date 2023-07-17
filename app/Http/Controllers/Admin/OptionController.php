@@ -3,22 +3,21 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use App\Models\Option;
 use Cache;
+use Illuminate\Http\Request;
+
 class OptionController extends Controller
 {
-    
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
      * @param  string  $key
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $key)
     {
-        $option= Option::where('key',$key)->first();
+        $option = Option::where('key', $key)->first();
         if (empty($option)) {
             $option = new Option;
             $option->key = $key;
@@ -29,9 +28,7 @@ class OptionController extends Controller
         Cache::forget($option->key);
 
         return response()->json([
-                'message' => __("Settings Updated Successfully..!!"),
-            ]);
-
+            'message' => __('Settings Updated Successfully..!!'),
+        ]);
     }
-
 }

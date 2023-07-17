@@ -2,9 +2,9 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
-use Illuminate\Database\Seeder;
 use App\Models\Postcategory;
+use Illuminate\Database\Seeder;
+
 class PostCategorySeeder extends Seeder
 {
     /**
@@ -14,19 +14,18 @@ class PostCategorySeeder extends Seeder
      */
     public function run()
     {
-        $postcategories = array(
-          array('post_id' => '8','category_id' => '7'),
-          array('post_id' => '8','category_id' => '13'),
-          array('post_id' => '9','category_id' => '7'),
-          array('post_id' => '9','category_id' => '8'),
-          array('post_id' => '9','category_id' => '12'),
-          array('post_id' => '9','category_id' => '13'),
-          array('post_id' => '10','category_id' => '6'),
-          array('post_id' => '10','category_id' => '13'),
-          array('post_id' => '10','category_id' => '14')
-        );
+        $postcategories = [
+            ['post_id' => '8', 'category_id' => '7'],
+            ['post_id' => '8', 'category_id' => '13'],
+            ['post_id' => '9', 'category_id' => '7'],
+            ['post_id' => '9', 'category_id' => '8'],
+            ['post_id' => '9', 'category_id' => '12'],
+            ['post_id' => '9', 'category_id' => '13'],
+            ['post_id' => '10', 'category_id' => '6'],
+            ['post_id' => '10', 'category_id' => '13'],
+            ['post_id' => '10', 'category_id' => '14'],
+        ];
 
         Postcategory::insert($postcategories);
-
     }
 }

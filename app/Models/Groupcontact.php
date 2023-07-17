@@ -8,11 +8,12 @@ use Illuminate\Database\Eloquent\Model;
 class Groupcontact extends Model
 {
     use HasFactory;
+
     public $timestamps = false;
 
     protected $fillable = [
         'contact_id',
         'group_id',
-        
+
     ];
 }

@@ -15,15 +15,15 @@ class DatabaseSeeder extends Seeder
     public function run()
     {
         $this->call([
-         UserTableSeeder::class,
-         GatewayTableSeeder::class,
-         OptiontableSeeder::class,
-         CategorySeeder::class,
-         MenuSeeder::class,
-         PlanSeeder::class,
-         PostSeeder::class,
-         PostmetaSeeder::class,
-         PostCategorySeeder::class,
-        ]); 
+            UserTableSeeder::class,
+            GatewayTableSeeder::class,
+            OptiontableSeeder::class,
+            CategorySeeder::class,
+            MenuSeeder::class,
+            PlanSeeder::class,
+            PostSeeder::class,
+            PostmetaSeeder::class,
+            PostCategorySeeder::class,
+        ]);
     }
 }

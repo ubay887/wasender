@@ -3,7 +3,6 @@
 namespace App\Mail;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
@@ -14,6 +13,7 @@ class ContactMail extends Mailable
     use Queueable, SerializesModels;
 
     public $mailcontent;
+
     /**
      * Create a new message instance.
      *
@@ -43,13 +43,12 @@ class ContactMail extends Mailable
      */
     public function content()
     {
-
         return new Content(
             markdown: 'mails.contact',
             with: [
-                'name'    => $this->mailcontent['name'],
-                'email'   => $this->mailcontent['email'],
-                'phone'   => $this->mailcontent['phone'],
+                'name' => $this->mailcontent['name'],
+                'email' => $this->mailcontent['email'],
+                'phone' => $this->mailcontent['phone'],
                 'subject' => $this->mailcontent['subject'],
                 'message' => $this->mailcontent['message'],
             ],

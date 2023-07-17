@@ -8,8 +8,9 @@ use Illuminate\Database\Eloquent\Model;
 class Plan extends Model
 {
     use HasFactory;
-    protected $casts=[
-        'data'=>'json'
+
+    protected $casts = [
+        'data' => 'json',
     ];
 
     public function activeuser()

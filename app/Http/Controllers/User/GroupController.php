@@ -3,11 +3,12 @@
 namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use App\Models\Group;
 use App\Models\Contact;
+use App\Models\Group;
 use Auth;
 use DB;
+use Illuminate\Http\Request;
+
 class GroupController extends Controller
 {
     /**
@@ -17,21 +18,18 @@ class GroupController extends Controller
      */
     public function index()
     {
-        $groups =  Group::where('user_id',Auth::id())->withCount('groupcontacts')->latest()->paginate(20);
-        $total_groups =  Group::where('user_id',Auth::id())->count();
+        $groups = Group::where('user_id', Auth::id())->withCount('groupcontacts')->latest()->paginate(20);
+        $total_groups = Group::where('user_id', Auth::id())->count();
 
-        $limit  = json_decode(Auth::user()->plan);
+        $limit = json_decode(Auth::user()->plan);
         $limit = $limit->group_limit ?? 0;
 
-        return view('user.group.index',compact('groups','total_groups','limit'));
+        return view('user.group.index', compact('groups', 'total_groups', 'limit'));
     }
-
-   
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
@@ -46,20 +44,14 @@ class GroupController extends Controller
         $group->save();
 
         return response()->json([
-                'message'  => __('Group Created Successfully'),
-                'redirect' => route('user.group.index')
-            ], 200);
-
+            'message' => __('Group Created Successfully'),
+            'redirect' => route('user.group.index'),
+        ], 200);
     }
-
-   
-
-    
 
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
@@ -69,14 +61,14 @@ class GroupController extends Controller
             'name' => 'required|max:200',
         ]);
 
-        $group =  Group::where('user_id',Auth::id())->findorFail($id);
+        $group = Group::where('user_id', Auth::id())->findorFail($id);
         $group->name = $request->name;
         $group->save();
 
         return response()->json([
-                'message'  => __('Group Update Successfully'),
-                'redirect' => route('user.group.index')
-            ], 200);
+            'message' => __('Group Update Successfully'),
+            'redirect' => route('user.group.index'),
+        ], 200);
     }
 
     /**
@@ -87,13 +79,11 @@ class GroupController extends Controller
      */
     public function destroy($id)
     {
-        
         DB::beginTransaction();
         try {
-            
-            $group =  Group::where('user_id',Auth::id())->with('groupcontacts')->findorFail($id);
+            $group = Group::where('user_id', Auth::id())->with('groupcontacts')->findorFail($id);
 
-            $contacts=[];
+            $contacts = [];
 
             foreach ($group->groupcontacts as $key => $row) {
                 array_push($contacts, $row->contact_id);
@@ -101,22 +91,20 @@ class GroupController extends Controller
 
             $group->delete();
 
-            Contact::whereIn('id',$contacts)->where('user_id',Auth::id())->delete();
+            Contact::whereIn('id', $contacts)->where('user_id', Auth::id())->delete();
 
             DB::commit();
-
         } catch (Throwable $th) {
             DB::rollback();
 
             return response()->json([
-                'message' => $th->getMessage()
+                'message' => $th->getMessage(),
             ], 500);
         }
 
-
         return response()->json([
-                'message'  => __('Group Deleted Successfully'),
-                'redirect' => route('user.group.index')
-            ], 200);
+            'message' => __('Group Deleted Successfully'),
+            'redirect' => route('user.group.index'),
+        ], 200);
     }
 }

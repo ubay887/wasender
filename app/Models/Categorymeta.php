@@ -8,5 +8,6 @@ use Illuminate\Database\Eloquent\Model;
 class Categorymeta extends Model
 {
     use HasFactory;
+
     public $timestamps = false;
 }

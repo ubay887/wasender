@@ -22,7 +22,7 @@ return new class extends Migration
             $table->string('from')->nullable();
             $table->string('to')->nullable();
             $table->string('type')->default('from_api')->nullable();
-            
+
             $table->timestamps();
         });
     }

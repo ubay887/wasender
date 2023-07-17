@@ -9,7 +9,7 @@ class Support extends Model
 {
     use HasFactory;
 
-     /**
+    /**
      * The attributes that are mass assignable.
      *
      * @var array<int, string>
@@ -34,6 +34,6 @@ class Support extends Model
 
     public function conversations()
     {
-       return $this->hasMany('App\Models\Supportlog');
+        return $this->hasMany('App\Models\Supportlog');
     }
 }

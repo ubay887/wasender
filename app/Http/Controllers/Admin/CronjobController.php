@@ -4,13 +4,12 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Auth;
 
 class CronjobController extends Controller
 {
     public function __construct()
     {
-         $this->middleware('permission:cron-job'); 
+        $this->middleware('permission:cron-job');
     }
 
     /**
@@ -36,7 +35,6 @@ class CronjobController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
@@ -69,7 +67,6 @@ class CronjobController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */

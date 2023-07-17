@@ -9,8 +9,6 @@ class Contact extends Model
 {
     use HasFactory;
 
-   
-
     public function user()
     {
         return $this->belongsTo('App\Models\User');
@@ -21,7 +19,6 @@ class Contact extends Model
         return $this->hasMany('App\Models\Schedulecontact');
     }
 
-
     public function groupcontacts()
     {
         return $this->hasMany(Groupcontact::class);
@@ -29,6 +26,6 @@ class Contact extends Model
 
     public function groupcontact()
     {
-        return $this->belongsToMany(Group::class,'groupcontacts');
+        return $this->belongsToMany(Group::class, 'groupcontacts');
     }
 }

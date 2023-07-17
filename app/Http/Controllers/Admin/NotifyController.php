@@ -3,18 +3,18 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use App\Models\Notification;
-use App\Traits\Notifications;
 use App\Models\User;
-use Auth;
+use App\Traits\Notifications;
+use Illuminate\Http\Request;
+
 class NotifyController extends Controller
 {
-   
     use Notifications;
 
-    public function __construct(){
-         $this->middleware('permission:notification'); 
+    public function __construct()
+    {
+        $this->middleware('permission:notification');
     }
 
     /**
@@ -26,32 +26,29 @@ class NotifyController extends Controller
     {
         $notifications = Notification::query();
 
-        if (!empty($request->search)) {
+        if (! empty($request->search)) {
             if ($request->type == 'email') {
-                $notifications = $notifications->whereHas('user',function($q) use ($request){
-                    return $q->where('email',$request->search);
+                $notifications = $notifications->whereHas('user', function ($q) use ($request) {
+                    return $q->where('email', $request->search);
                 });
-            }
-            else{
-                $notifications = $notifications->where($request->type,'LIKE','%'.$request->search.'%');
+            } else {
+                $notifications = $notifications->where($request->type, 'LIKE', '%'.$request->search.'%');
             }
         }
 
         $notifications = $notifications->with('user')->latest()->paginate(30);
         $type = $request->type ?? '';
 
-        $totalNotifications =Notification::count();
-        $readNotifications  =Notification::where('seen',1)->count();
-        $unreadNotifications=Notification::where('seen',0)->count();
-       
-        return view('admin.logs.notifications',compact('notifications','request','type','totalNotifications','readNotifications','unreadNotifications'));
+        $totalNotifications = Notification::count();
+        $readNotifications = Notification::where('seen', 1)->count();
+        $unreadNotifications = Notification::where('seen', 0)->count();
+
+        return view('admin.logs.notifications', compact('notifications', 'request', 'type', 'totalNotifications', 'readNotifications', 'unreadNotifications'));
     }
 
-
-     /**
+    /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
@@ -59,35 +56,31 @@ class NotifyController extends Controller
         $validated = $request->validate([
             'title' => 'required|max:100',
             'email' => 'required|email',
-            'description'  => 'required',
-            'url'  => 'required',
-            
+            'description' => 'required',
+            'url' => 'required',
+
         ]);
 
-        $user = User::where('email',$request->email)->first();
+        $user = User::where('email', $request->email)->first();
         if (empty($user)) {
             return response()->json([
-                'message'  => __('User is not exist')
+                'message' => __('User is not exist'),
             ], 401);
         }
 
         $title = $request->title;
-        $notification['user_id']   = $user->id;
-        $notification['title']     = $title;
-        $notification['comment']   = $request->description;
-        $notification['url']       = $request->url;
+        $notification['user_id'] = $user->id;
+        $notification['title'] = $title;
+        $notification['comment'] = $request->description;
+        $notification['url'] = $request->url;
 
         $this->createNotification($notification);
 
         return response()->json([
             'redirect' => route('admin.notification.index'),
-            'message'  => __('Notification Created successfully.')
+            'message' => __('Notification Created successfully.'),
         ]);
-
-
     }
-
-    
 
     /**
      * Remove the specified resource from storage.
@@ -102,8 +95,7 @@ class NotifyController extends Controller
 
         return response()->json([
             'redirect' => route('admin.notification.index'),
-            'message'  => __('Notification Removed successfully.')
+            'message' => __('Notification Removed successfully.'),
         ]);
     }
-
 }

@@ -3,14 +3,13 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use App\Models\Option;
 use App\Traits\Uploader;
-use Auth;
 use Cache;
+use Illuminate\Http\Request;
+
 class SeoController extends Controller
 {
-
     use Uploader;
 
     public function __construct()
@@ -25,15 +24,15 @@ class SeoController extends Controller
      */
     public function index()
     {
-       $posts = Option::where('key','LIKE','%seo%')->get()->map(function($query){
-            $data['key']     = str_replace('_',' ',str_replace('seo_','',$query->key));
-            $data['id']      = $query->id;
+        $posts = Option::where('key', 'LIKE', '%seo%')->get()->map(function ($query) {
+            $data['key'] = str_replace('_', ' ', str_replace('seo_', '', $query->key));
+            $data['id'] = $query->id;
             $data['content'] = json_decode($query->value);
 
             return $data;
-       });
+        });
 
-       return view('admin.seo.index',compact('posts'));
+        return view('admin.seo.index', compact('posts'));
     }
 
     /**
@@ -44,41 +43,38 @@ class SeoController extends Controller
      */
     public function edit($id)
     {
-        $seo = Option::where('key','LIKE','%seo%')->findorFail($id);
+        $seo = Option::where('key', 'LIKE', '%seo%')->findorFail($id);
         $contents = json_decode($seo->value ?? '');
 
-        return view('admin.seo.show',compact('id','contents'));
+        return view('admin.seo.show', compact('id', 'contents'));
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id)
     {
         $data = $request->validate([
-            'image'  => ['image','max:1024']
+            'image' => ['image', 'max:1024'],
         ]);
 
         $meta = $request->metadata ?? '';
 
-        $option   = Option::where('id', $id)->first();
+        $option = Option::where('id', $id)->first();
         $contents = json_decode($seo->value ?? '');
 
-        
         if ($request->hasFile('image')) {
-           $newImage =  $this->saveFile($request, 'image');
-           $meta['preview'] = $newImage;
+            $newImage = $this->saveFile($request, 'image');
+            $meta['preview'] = $newImage;
 
-           if (isset($contents->preview)) {
-               if (!empty($contents->preview)) {
-                   $this->removeFile($contents->preview);
-               }
-           }
-
+            if (isset($contents->preview)) {
+                if (! empty($contents->preview)) {
+                    $this->removeFile($contents->preview);
+                }
+            }
         }
 
         $option->value = json_encode($meta);
@@ -87,9 +83,7 @@ class SeoController extends Controller
         Cache::forget($option->key);
 
         return response()->json([
-            'message'  => __('SEO settings updated successfully.')
+            'message' => __('SEO settings updated successfully.'),
         ]);
     }
-
-   
 }

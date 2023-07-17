@@ -3,15 +3,16 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use App\Models\User;
-use Spatie\Permission\Models\Role;
+use Illuminate\Http\Request;
 use Spatie\Permission\Models\Permission;
+use Spatie\Permission\Models\Role;
 
 class RoleController extends Controller
 {
-    public function __construct(){
-         $this->middleware('permission:roles'); 
+    public function __construct()
+    {
+        $this->middleware('permission:roles');
     }
 
     /**
@@ -21,10 +22,9 @@ class RoleController extends Controller
      */
     public function index()
     {
-       
-        $roles = Role::where('id','!=',1)->get();
+        $roles = Role::where('id', '!=', 1)->get();
+
         return view('admin.role.index', compact('roles'));
-        
     }
 
     /**
@@ -34,17 +34,15 @@ class RoleController extends Controller
      */
     public function create()
     {
-       
         $permisions = Permission::all();
         $permission_groups = User::getPermissionGroup();
+
         return view('admin.role.create', compact('permisions', 'permission_groups'));
-       
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
@@ -55,15 +53,12 @@ class RoleController extends Controller
         $role = Role::create(['name' => $request->name]);
         $permissions = $request->input('permissions');
 
-        if (!empty($permissions)) {
-
+        if (! empty($permissions)) {
             $role->syncPermissions($permissions);
         }
 
-        return response()->json(['message'=> __('Role created successfully')]);
+        return response()->json(['message' => __('Role created successfully')]);
     }
-
-   
 
     /**
      * Show the form for editing the specified resource.
@@ -73,18 +68,16 @@ class RoleController extends Controller
      */
     public function edit($id)
     {
-        
         $role = Role::findById($id);
         $all_permissions = Permission::all();
         $permission_groups = User::getpermissionGroups();
+
         return view('admin.role.edit', compact('role', 'all_permissions', 'permission_groups'));
-        
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
@@ -92,15 +85,15 @@ class RoleController extends Controller
     {
         // Validation Data
         $request->validate([
-            'name' => 'required|max:100|unique:roles,name,' . $id
+            'name' => 'required|max:100|unique:roles,name,'.$id,
         ], [
-            'name.requried' => 'Please give a role name'
+            'name.requried' => 'Please give a role name',
         ]);
 
         $role = Role::findById($id);
         $permissions = $request->input('permissions');
 
-        if (!empty($permissions)) {
+        if (! empty($permissions)) {
             $role->syncPermissions($permissions);
         }
 
@@ -115,12 +108,11 @@ class RoleController extends Controller
      */
     public function destroy($id)
     {
-
         Role::destroy($id);
+
         return response()->json([
             'redirect' => route('admin.role.index'),
-            'message'=> __('Role Removed')
+            'message' => __('Role Removed'),
         ]);
-        
     }
 }

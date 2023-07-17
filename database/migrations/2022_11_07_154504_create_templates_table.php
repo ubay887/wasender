@@ -22,7 +22,6 @@ return new class extends Migration
             $table->string('type')->nullable();
             $table->integer('status')->default(1); //1=active 0= disable
             $table->timestamps();
-           
         });
     }
 

@@ -2,13 +2,12 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
-use Illuminate\Database\Seeder;
-use Hash;
-use Str;
 use App\Models\User;
-use Spatie\Permission\Models\Role;
+use Hash;
+use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Permission;
+use Spatie\Permission\Models\Role;
+
 class UserTableSeeder extends Seeder
 {
     /**
@@ -18,7 +17,7 @@ class UserTableSeeder extends Seeder
      */
     public function run()
     {
-       $super = User::create([
+        $super = User::create([
             'role' => 'admin',
             'avatar' => 'uploads/avatar.png',
             'name' => 'Admin',
@@ -29,7 +28,7 @@ class UserTableSeeder extends Seeder
         $roleSuperAdmin = Role::create(['name' => 'superadmin']);
         //create permission
         $permissions = [
-          
+
             [
                 'group_name' => 'Appearance',
                 'permissions' => [
@@ -45,10 +44,9 @@ class UserTableSeeder extends Seeder
                     'custom-page',
                     'partners',
                     'seo',
-                    'testimonials'
+                    'testimonials',
 
-
-                ]
+                ],
             ],
             [
                 'group_name' => 'Site Settings',
@@ -58,8 +56,7 @@ class UserTableSeeder extends Seeder
                     'developer-settings',
                     'roles',
 
-
-                ]
+                ],
             ],
             [
                 'group_name' => 'User Logs',
@@ -71,8 +68,8 @@ class UserTableSeeder extends Seeder
                     'notification',
                     'schedule',
                     'templates',
-                    'message-transactions'
-                ]
+                    'message-transactions',
+                ],
             ],
             [
                 'group_name' => 'SAAS Functionalities',
@@ -82,17 +79,14 @@ class UserTableSeeder extends Seeder
                     'order',
                     'subscriptions',
                     'support',
-                ]
+                ],
             ],
-
 
         ];
 
         //assign permission
 
         foreach ($permissions as $key => $row) {
-
-
             foreach ($row['permissions'] as $per) {
                 $permission = Permission::create(['name' => $per, 'group_name' => $row['group_name']]);
                 $roleSuperAdmin->givePermissionTo($permission);

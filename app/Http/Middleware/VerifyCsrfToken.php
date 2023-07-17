@@ -14,6 +14,6 @@ class VerifyCsrfToken extends Middleware
     protected $except = [
         '/install',
         '/install/migrate',
-        '/install/verify'
+        '/install/verify',
     ];
 }

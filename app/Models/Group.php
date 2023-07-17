@@ -16,7 +16,6 @@ class Group extends Model
 
     public function contacts()
     {
-        return $this->belongsToMany(Contact::class,'groupcontacts','group_id','contact_id')->select('name','phone');
+        return $this->belongsToMany(Contact::class, 'groupcontacts', 'group_id', 'contact_id')->select('name', 'phone');
     }
 }
-

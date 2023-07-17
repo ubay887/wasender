@@ -9,7 +9,7 @@ class Category extends Model
 {
     use HasFactory;
 
-     /**
+    /**
      * The attributes that are mass assignable.
      *
      * @var array<int, string>
@@ -35,6 +35,6 @@ class Category extends Model
 
     public function posts()
     {
-         return $this->belongsToMany('App\Models\Post','postcategories','post_id','category_id');
+        return $this->belongsToMany('App\Models\Post', 'postcategories', 'post_id', 'category_id');
     }
 }

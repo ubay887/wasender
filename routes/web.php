@@ -13,19 +13,13 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-
-
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
-Route::group(['prefix' => 'cron', 'as' => 'cron.'], function (){
-
+Route::group(['prefix' => 'cron', 'as' => 'cron.'], function () {
     Route::get('/execute-schedule', [App\Http\Controllers\CronController::class, 'ExecuteSchedule']);
     Route::get('/notify-to-user', [App\Http\Controllers\CronController::class, 'notifyToUser']);
     Route::get('/remove-junk-device', [App\Http\Controllers\CronController::class, 'removeJunkDevice']);
-
 });
-
-
 
 //**======================== Payment Gateway Route Group for merchant ====================**//
 Route::group(['middleware' => ['auth', 'web']], function () {

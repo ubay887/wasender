@@ -2,11 +2,12 @@
 
 namespace App\Http\Requests;
 
-use Illuminate\Http\Request;
+use App\Rules\Phone;
+use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
-use Illuminate\Contracts\Validation\Validator;
-use App\Rules\Phone;
+use Illuminate\Http\Request;
+
 class Bulkrequest extends FormRequest
 {
     /**
@@ -26,16 +27,14 @@ class Bulkrequest extends FormRequest
      */
     public function rules(Request $request)
     {
-        $validators= [
+        $validators = [
             'appkey' => 'required|max:60',
             'authkey' => 'required|max:60',
             'file' => 'nullable|url|max:200',
-            'to' => ['required','max:13',new Phone],           
+            'to' => ['required', 'max:13', new Phone],
         ];
 
-        
-
-        if(empty($request->message)){
+        if (empty($request->message)) {
             $validators['template_id'] = 'required';
         }
 
@@ -43,21 +42,19 @@ class Bulkrequest extends FormRequest
             $validators['message'] = 'required|max:1000';
         }
 
-        if (!empty($request->variables)) {
-           $validators['template_id'] = 'required';
+        if (! empty($request->variables)) {
+            $validators['template_id'] = 'required';
         }
 
-             
         return $validators;
     }
 
     public function failedValidation(Validator $validator)
     {
-     
         throw new HttpResponseException(response()->json([
-               'success'   => false,
-               'message'   => 'Validation errors',
-               'data'      => $validator->errors()
+            'success' => false,
+            'message' => 'Validation errors',
+            'data' => $validator->errors(),
         ]));
     }
 }

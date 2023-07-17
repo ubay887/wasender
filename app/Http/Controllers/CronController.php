@@ -2,20 +2,17 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\Models\Schedulemessage;
-use Carbon\Carbon;
-use App\Models\Schedulecontact;
-use App\Models\User;
 use App\Models\Device;
-use App\Traits\Whatsapp;
+use App\Models\Schedulemessage;
+use App\Models\User;
 use App\Traits\Notifications;
+use App\Traits\Whatsapp;
+use Carbon\Carbon;
 
 class CronController extends Controller
 {
     use Whatsapp;
     use Notifications;
-
 
     /**
      * execute shedule
@@ -24,7 +21,6 @@ class CronController extends Controller
      */
     public function ExecuteSchedule()
     {
-
         $today = Carbon::now();
         $now = Carbon::parse($today)->tz(env('TIME_ZONE', 'UTC'));
 
@@ -32,10 +28,7 @@ class CronController extends Controller
             return $q->where('will_expire', '>', now());
         })->with('contacts', 'device', 'user', 'template')->where('schedule_at', '<=', $now)->where('status', 'pending')->get();
 
-
-
         foreach ($schedulemessages as $key => $schedulemessage) {
-
             $schedule = Schedulemessage::where('id', $schedulemessage->id)->with('user', 'contacts')->first();
 
             $response = $this->sentRequest($schedulemessage);
@@ -48,9 +41,8 @@ class CronController extends Controller
             $schedule->save();
         }
 
-        return "Cron job executed";
+        return 'Cron job executed';
     }
-
 
     /**
      * notify to subscribers before expire the subscription
@@ -61,7 +53,7 @@ class CronController extends Controller
             return '';
         }
 
-        if (!empty($data->template)) {
+        if (! empty($data->template)) {
             $template = $data->template;
 
             if (isset($template->body['text'])) {
@@ -74,7 +66,6 @@ class CronController extends Controller
                 $text = $this->formatText($template->body['text'], $reciverContact, $user);
                 $body['text'] = $text;
             } else {
-
                 $body = $template->body;
             }
 
@@ -87,20 +78,16 @@ class CronController extends Controller
 
             $text = $this->formatText($data->body, $reciverContact, $user);
 
-            $body = array('text' => $text);
+            $body = ['text' => $text];
             $type = 'plain-text';
         }
-
-
 
         $device_id = $data->device_id;
         $from = $data->device->phone;
         $status = null;
 
         foreach ($data->contacts as $key => $contact) {
-
             try {
-
                 if ($type == 'plain-text') {
                     $response = $this->messageSend($body, $device_id, $contact->phone, $type, true);
                 } else {
@@ -124,7 +111,6 @@ class CronController extends Controller
                     $this->saveLog($logs);
                 }
 
-
                 $status = 200;
             } catch (Exception $e) {
                 $status = 500;
@@ -133,7 +119,6 @@ class CronController extends Controller
 
         return $status;
     }
-
 
     /**
      * notify to subscribers before expire the subscription
@@ -149,7 +134,7 @@ class CronController extends Controller
             $this->sentWillExpireEmail($user);
         }
 
-        return "Cron job executed";
+        return 'Cron job executed';
     }
 
     /**
@@ -162,6 +147,6 @@ class CronController extends Controller
         $subdays = today()->subDays(7);
         $devices = Device::where('phone', null)->where('created_at', $subdays)->delete();
 
-        return "Cron job executed";
+        return 'Cron job executed';
     }
 }

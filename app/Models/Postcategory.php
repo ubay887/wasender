@@ -9,7 +9,7 @@ class Postcategory extends Model
 {
     use HasFactory;
 
-     public function Category()
+    public function Category()
     {
         return $this->belongsToMany(Category::class);
     }

@@ -13,7 +13,7 @@ class Schedulemessage extends Model
     {
         return $this->belongsTo('App\Models\User');
     }
-    
+
     public function schedulecontacts()
     {
         return $this->hasMany('App\Models\Schedulecontact');
@@ -31,6 +31,6 @@ class Schedulemessage extends Model
 
     public function contacts()
     {
-        return $this->belongsToMany('App\Models\Contact','schedulecontacts','schedulemessage_id','contact_id');
+        return $this->belongsToMany('App\Models\Contact', 'schedulecontacts', 'schedulemessage_id', 'contact_id');
     }
 }

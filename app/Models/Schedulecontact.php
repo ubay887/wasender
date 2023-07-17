@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Schedulecontact extends Model
 {
     use HasFactory;
+
     public $timestamps = false;
 
     public function contact()

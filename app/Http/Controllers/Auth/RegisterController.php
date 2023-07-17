@@ -3,13 +3,12 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use App\Providers\RouteServiceProvider;
 use App\Models\User;
 use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Str;
-use Auth;
+
 class RegisterController extends Controller
 {
     /*
@@ -45,7 +44,6 @@ class RegisterController extends Controller
     /**
      * Get a validator for an incoming registration request.
      *
-     * @param  array  $data
      * @return \Illuminate\Contracts\Validation\Validator
      */
     protected function validator(array $data)
@@ -60,7 +58,6 @@ class RegisterController extends Controller
     /**
      * Create a new user instance after a valid registration.
      *
-     * @param  array  $data
      * @return \App\Models\User
      */
     protected function create(array $data)
@@ -73,16 +70,15 @@ class RegisterController extends Controller
         ]);
     }
 
-
     public function generateAuthKey()
     {
         $rend = Str::random(50);
         $check = User::where('authkey', $rend)->first();
 
-        if($check == true){
+        if ($check == true) {
             $rend = $this->generateAuthKey();
         }
+
         return $rend;
     }
-
 }

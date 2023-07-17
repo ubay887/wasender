@@ -3,16 +3,17 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use App\Models\Template;
 use App\Traits\Notifications;
-use Auth;
+use Illuminate\Http\Request;
+
 class TemplateController extends Controller
 {
     use Notifications;
 
-    public function __construct(){
-         $this->middleware('permission:templates'); 
+    public function __construct()
+    {
+        $this->middleware('permission:templates');
     }
 
     /**
@@ -22,31 +23,27 @@ class TemplateController extends Controller
      */
     public function index(Request $request)
     {
-       $templates = Template::query();
+        $templates = Template::query();
 
-        if (!empty($request->search)) {
+        if (! empty($request->search)) {
             if ($request->type == 'email') {
-                $templates = $templates->whereHas('user',function($q) use ($request){
-                    return $q->where('email',$request->search);
+                $templates = $templates->whereHas('user', function ($q) use ($request) {
+                    return $q->where('email', $request->search);
                 });
-            }
-            else{
-                $templates = $templates->where($request->type,'LIKE','%'.$request->search.'%');
+            } else {
+                $templates = $templates->where($request->type, 'LIKE', '%'.$request->search.'%');
             }
         }
 
         $templates = $templates->with('user')->withCount('smstransaction')->latest()->paginate(30);
         $type = $request->type ?? '';
 
-        $totalActiveTemplates= Template::where('status',1)->count();
-        $totalInActiveTemplates= Template::where('status',0)->count();
-        $totalTemplates= Template::count();
-       
+        $totalActiveTemplates = Template::where('status', 1)->count();
+        $totalInActiveTemplates = Template::where('status', 0)->count();
+        $totalTemplates = Template::count();
 
-        return view('admin.logs.templates',compact('templates','request','type','totalActiveTemplates','totalInActiveTemplates','totalTemplates'));
+        return view('admin.logs.templates', compact('templates', 'request', 'type', 'totalActiveTemplates', 'totalInActiveTemplates', 'totalTemplates'));
     }
-
-    
 
     /**
      * Remove the specified resource from storage.
@@ -61,14 +58,14 @@ class TemplateController extends Controller
 
         $title = 'Your a template was removed by admin';
         $notification['user_id'] = $row->user_id;
-        $notification['title']   = $title;
+        $notification['title'] = $title;
         $notification['url'] = '/user/template';
 
         $this->createNotification($notification);
 
         return response()->json([
             'redirect' => route('admin.template.index'),
-            'message'  => __('Template Removed successfully.')
+            'message' => __('Template Removed successfully.'),
         ]);
     }
 }

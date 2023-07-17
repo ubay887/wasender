@@ -21,7 +21,7 @@ return new class extends Migration
             $table->foreignId('plan_id')->constrained('plans')->cascadeOnDelete();
             $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
             $table->foreignId('gateway_id')->constrained('gateways')->cascadeOnDelete();
-            
+
             $table->double('amount')->nullable();
             $table->double('tax')->nullable();
             $table->integer('status')->default(1); //1= approved 2= pending

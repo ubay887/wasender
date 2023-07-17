@@ -24,7 +24,7 @@ return new class extends Migration
             $table->string('zone')->nullable();
             $table->date('date')->nullable();
             $table->date('time')->nullable();
-           
+
             $table->string('status')->default('pending');
             $table->timestamps();
         });

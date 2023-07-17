@@ -1,17 +1,19 @@
 <?php
 
 namespace App\Models;
+
 use App\Autoload\HasUid;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Str;
+
 class Device extends Model
 {
     use HasFactory, HasUid;
 
     public $timestamps = false;
 
-     /**
+    /**
      * The attributes that are mass assignable.
      *
      * @var array<int, string>
@@ -24,7 +26,7 @@ class Device extends Model
     {
         parent::boot();
 
-        static::creating(function($model){
+        static::creating(function ($model) {
             $model->uuid = Str::uuid()->toString();
         });
     }
